@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'pages/chatroomCss.css' %}">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-fixed-top navbar-toggleable-md navbar-inverse bg-inverse">
+        <div class="container">
+            
+            <div class="collapse navbar-collapse" id="navbarExample">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item">
+                  
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br><br>
+    <div class="container">
+        <h3 class="profile-username ">Welcome {{ user.first_name }} {{ user.last_name }}</h3>
+    </div>
+            
+            
+            
+        
+        <br><br>
+       <div >
+            <div class="container col-lg-2 pre-scrollable panel panel-primary"style="display: inline;">
+                    <a href="#" class="list-group-item list-group-item-action active">
+                            Threads
+                          </a>
+                          <a data-toggle="modal" data-target="#exampleModalCenter" href="#exampleModalCenter"class="list-group-item list-group-item-action list-group-item-info">Create Thread</a>
+                         
+                         <!--form to submit a new message. the end of the form is down by the send button. need to get thread name so message goes to correct user-->
+                          
+                         {% for threads in threads %}
+                            <form method="POST" action="/get_messages/">
+                                {%csrf_token %}
+                                <button name="current_thread" class="list-group-item list-group-item-action" value ="{{threads.thread_ID}}" type="submit">{{threads.name}}</button>
+                            </form>
+
+                         {% endfor %}
+                       
+                         
+                          
+                         
+               </div>
+                <div  style="display: inline;">
+                            <div class=" col-lg-9">
+                                <div class="list-group">
+                                        
+                              <div class="panel panel-primary">
+                                  
+                                  <div class="panel-heading">
+                                      <span class="glyphicon glyphicon-comment"></span> Members: {{user.username}}
+                                      <div class="btn-group pull-right">
+        
+                              </button>
+                                         <ul class="dropdown-menu slidedown">
+                                              <li><a href="#"><span class="glyphicon glyphicon-refresh"></span>Refresh</a></li>
+                                              <li><a href="#"><span class="glyphicon glyphicon-ok-sign"></span>Available</a></li>
+                                              <li><a href="#"><span class="glyphicon glyphicon-remove"></span>Busy</a></li>
+                                              <li><a href="#"><span class="glyphicon glyphicon-time"></span>Away</a></li>
+                                              <li class="divider"></li>
+                                              <li><a href="#"><span class="glyphicon glyphicon-off"></span>Sign Out</a></li>
+                                          </ul>
+                                      </div>
+                                  </div>
+                                  <div class="panel-body pre-scrollable">
+                                      <ul class="chat list-group">
+
+                                        {% for messages in messages %}
+                                          <li class="list-group-item left clearfix">
+                                              <span class="chat-img pull-left">
+                                <img src="http://placehold.it/50/55C1E7/fff&text=JS" alt="User Avatar" class="img-circle" />
+                              </span>
+                                              <div class="chat-body clearfix">
+                                                  <div class="header">
+                                                      <strong class="primary-font">{{messages.user_ID.first_name}}{{messages.user_ID.last_name}}</strong> <small class="pull-right text-muted">
+                                  <span class="glyphicon glyphicon-time"></span>{{messages.date_time}}</small>
+                                                  </div>
+                                                  <p>
+                                                     {{ messages.text}}
+                                                  </p>
+                                              </div>
+                                          </li>
+
+                                          {% endfor %}
+                                         
+                                      </ul>
+                                  </div>
+                                  <form method="POST" action="/create_message/">
+                                        {%csrf_token %}
+                                    
+                                  <div class="panel-footer">
+                                      <div class="input-group">
+                                                <input name="text_message" type="text" class="form-control input-sm" placeholder="Type your message here..." />
+                                                <span class="input-group-btn">
+                                                      <button class="btn btn-secondary btn-sm" name="message__image"id="btn-chat"><input type="file" class="form-control-file"  id="message_image"></button>
+                                                    <button type="submit" class="btn btn-warning btn-sm" id="btn-chat" name ="current_thread" value="{{current_thread}}">Send</button>
+                                                </span>
+
+                                          </form>
+                                          
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!--pop up that allows user to create a new thread-->
+                          <form method="POST" action="/create_thread/">
+                            {%csrf_token %}
+                            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                    
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLongTitle">Create a new Thread</h5>
+                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input class="form-control" name="threads_name"type="text" placeholder="Thread name"><br>
+                                            <input class="form-control" name="member_number"type="number" placeholder="Number of members in thread"><br>
+                                            <input class="form-control" name="member_username"type="text" placeholder="Member usernames"><br>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                          <button type="submit" class="btn btn-primary">Create Thread</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+
+                      </form>
+                          
+                      </div>
+                  
+       </div>
+
+       <footer class="navbar-default navbar-fixed-bottom navbar-toggleable-md navbar-inverse bg-inverse">
+            <div class="container-fluid">
+                    <ul class="nav navbar-nav navbar-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Elipsicom Messaging System</a>
+                        </li>    
+                    </ul>
+                                
+            </div>
+                        
+            </div>
+          </footer>
+   
+    </body>
+</html>
